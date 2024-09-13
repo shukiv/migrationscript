@@ -26,6 +26,22 @@ if [ -z "$SSH_KEY" ]; then
     exit 1
 fi
 
+# Create dirvish user if not exists
+if id "$USER" &>/dev/null; then
+    echo "User $USER already exists."
+else
+    adduser --disabled-password --gecos "Dirvish backup user" $USER
+    echo "User $USER created."
+fi
+
+# Add user to sudoers for rsync without password
+if ! grep -q "$USER ALL = NOPASSWD: /usr/bin/rsync" /etc/sudoers; then
+    echo "$USER ALL = NOPASSWD: /usr/bin/rsync" >> /etc/sudoers
+    echo "Added $USER to sudoers for NOPASSWD rsync."
+else
+    echo "$USER already has sudoers permissions for rsync."
+fi
+
 # Create .ssh directory if it doesn't exist
 if [ ! -d "$SSH_DIR" ]; then
   mkdir -p "$SSH_DIR"
