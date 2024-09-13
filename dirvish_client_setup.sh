@@ -27,7 +27,7 @@ if [ -z "$SSH_KEY" ]; then
 fi
 
 # Create dirvish user if not exists
-if id "$USER" &>/dev/null; then
+if getent passwd $USER > /dev/null 2>&1; then
     echo "User $USER already exists."
 else
     adduser --disabled-password --gecos "Dirvish backup user" $USER
